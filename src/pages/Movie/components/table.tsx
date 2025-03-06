@@ -1,6 +1,6 @@
 import { Table } from 'antd'
 import { memo } from 'react'
-const ScrollxTable = ({ dataSource }: any) => {
+const ScrollxTable = ({ dataSource, refDom }: any) => {
   const columns: any = [
     {
       title: 'Full Name',
@@ -68,19 +68,15 @@ const ScrollxTable = ({ dataSource }: any) => {
     }
   ]
   return (
-    // <div
-    //   id="table_container"
-    // >
     <Table<any>
       columns={columns}
       dataSource={dataSource}
       scroll={{ x: 1800 }}
       sticky={{
-        // offsetHeader: 0,
-        getContainer: () => document.getElementById('table_box') as HTMLElement
+        // getContainer: () => document.getElementById('table_box') as HTMLElement
+        getContainer: () => refDom.current as HTMLElement
       }}
     />
-    // {/* </div> */}
   )
 }
 

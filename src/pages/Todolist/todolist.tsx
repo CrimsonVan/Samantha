@@ -4,6 +4,8 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState, AppDispatch } from '../../store'
 import { addTodoArr, delTodoArr, editTodoArr } from '../../store/modules/todollist'
 function Todolist() {
+  const a = 1
+  console.log(a)
   const dispatch: AppDispatch = useDispatch()
   // 查询state中的数据
   const todolist = useSelector((state: RootState) => state.todoStore.todoArr)

@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import cn from 'classnames'
 import { useData } from './hooks/useData'
 import { useFullscreen } from 'ahooks'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import MovieChild from './components/movieChild'
 import PaginationComp from '../../global/myAntd/PaginationCom'
 import CheckBoxGroup from '../../global/myAntd/CheckboxComp'
@@ -126,7 +126,12 @@ function Movie() {
     setOpen,
     loading
   } = useData()
-
+  //dom
+  const table_box_dom = useRef(null)
+  //获取dom
+  useEffect(() => {
+    console.log('table_dom', table_box_dom.current)
+  }, [])
   //二次封装的antd的回调
   function onChange(page_num: number) {
     console.log('测试二次封装antd回调', page_num)
@@ -146,12 +151,18 @@ function Movie() {
       e.map((item: any) => dayjs(item).format('YYYY-MM-DD'))
     )
   }
-
   return (
     <>
       <div style={{ height: '20vh', backgroundColor: 'green' }}></div>
-      <div id="table_box" style={{ height: '80vh', backgroundColor: '#fff', overflowY: 'scroll' }}>
-        <ScrollxTable dataSource={dataSource} style={{ width: '800px' }}></ScrollxTable>
+      <div
+        ref={table_box_dom}
+        style={{ height: '80vh', backgroundColor: '#fff', overflowY: 'scroll' }}
+      >
+        <ScrollxTable
+          refDom={table_box_dom}
+          dataSource={dataSource}
+          style={{ width: '800px' }}
+        ></ScrollxTable>
         <div className={Styles.btnContainer} style={{ marginLeft: '50px', marginTop: '30px' }}>
           <Button
             type="primary"

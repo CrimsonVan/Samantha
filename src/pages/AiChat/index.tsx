@@ -306,5 +306,7 @@
 //     }
 //   }
 // `
-
-// export default AiChat
+function AiChat() {
+  return <>AiChat</>
+}
+export default AiChat
