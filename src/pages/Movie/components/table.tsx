@@ -67,6 +67,8 @@ const ScrollxTable = ({ dataSource, refDom }: any) => {
       render: () => <a>action</a>
     }
   ]
+  //1
+  //2
   return (
     <Table<any>
       columns={columns}
