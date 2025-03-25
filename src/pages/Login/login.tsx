@@ -18,6 +18,8 @@ const Login: React.FC = () => {
   //可口
   //百事
   //测试gitlab
+  //测试gitlab分支
+  console.log('测试gitlab分支')
   const navigate = useNavigate()
   const dispatch: any = useDispatch()
   const onFinish = async (values: any) => {
