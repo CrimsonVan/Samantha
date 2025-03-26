@@ -19,6 +19,7 @@ const Login: React.FC = () => {
   //百事
   //测试gitlab
   //测试gitlab分支
+  //测试amend
   console.log('测试gitlab分支')
   console.log('测试mr222')
   //git合并分支1
