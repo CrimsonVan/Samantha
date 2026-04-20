@@ -31,7 +31,10 @@ module.exports = {
     'no-unused-vars': 'error', // 禁止出现未使用的变量
     '@typescript-eslint/no-non-null-assertion': 'off',
     'prefer-const': 'off',
-    '@typescript-eslint/no-explicit-any': ['off']
+    'no-constant-condition': 'off',
+    '@typescript-eslint/no-explicit-any': ['off'],
+    'no-console': 'error',
+    'react/display-name': 'off'
   },
   settings: {
     react: {

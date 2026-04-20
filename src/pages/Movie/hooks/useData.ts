@@ -28,7 +28,8 @@ export function useData() {
       }, 3000)
     })
   }
-
+  // List
+  const [list, setList] = useState([])
   //熟悉useRequest获取异步数据
   const { run: runAsync, loading } = useRequest(getUsername, {
     manual: true,

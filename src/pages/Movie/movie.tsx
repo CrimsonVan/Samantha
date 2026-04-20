@@ -1,21 +1,28 @@
 import Styles from './movie.module.less'
 import styled from 'styled-components'
+// 引入 dayjs
+// import dayjs from 'dayjs'
 import cn from 'classnames'
 import { useData } from './hooks/useData'
 import { useFullscreen } from 'ahooks'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import MovieChild from './components/movieChild'
 import PaginationComp from '../../global/myAntd/PaginationCom'
 import CheckBoxGroup from '../../global/myAntd/CheckboxComp'
 import { useClickOutside } from '../../global/myHooks/useClickOutside'
 import { Link } from 'react-router-dom'
-import { DatePicker, Button } from 'antd'
+import { DatePicker, Button, Spin, Popover } from 'antd'
 import { CvButton } from './myAntd/CvButton'
 import { cvMessage } from './myAntd/CvMessage'
 import dayjs from 'dayjs'
 import { message } from 'antd'
 import ScrollxTable from './components/table'
+import { TestChild } from './components/TestFirstChild'
+import { values } from 'lodash'
+import useImmer from 'immer'
 const { RangePicker } = DatePicker
+import { useAsyncData } from './hooks/useAsyncData'
+import { useRenderAndData } from './hooks/useRenderAndData'
 // const columns: any = [
 //   {
 //     title: 'Full Name',
@@ -89,71 +96,202 @@ const { RangePicker } = DatePicker
 //   age: 32,
 //   address: `London Park no. ${i}`
 // }))
+/** 信堡评分释义小标题 */
+// export enum EnterpriseTypeList {
+//   BRANCH = '21家的分行',
+//   TWENTY_ONE = '21家重要银行',
+//   NON_TWENTY_ONE = '非21家重要银行'
+// }
+
 function Movie() {
-  const dataSource = Array.from({ length: 100 }).map<any>((_, i) => ({
-    key: i,
-    name: `Edward ${i}`,
-    age: 32,
-    address: `London Park no. ${i}`
-  }))
-  // 限制日期函数
-  const disabledDate = (current: any) => {
-    const dateFormat = 'YYYY-MM-DD'
+  const { loading, list, total, text } = useRenderAndData()
+  total && console.log('loading和list和total', loading, list, total)
+
+  // console.log(
+  //   '测试{}',
+  //   values({}).some((d: any) => d)
+  // )
+
+  // const dataSource = Array.from({ length: 100 }).map<any>((_, i) => ({
+  //   key: i,
+  //   name: `Edward ${i}`,
+  //   age: 32,
+  //   address: `London Park no. ${i}`
+  // }))
+  // // 限制日期函数
+  // const disabledDate = (current: any) => {
+  //   const dateFormat = 'YYYY-MM-DD'
+  //   return (
+  //     current &&
+  //     (current > dayjs('2020-12-01', dateFormat) || current < dayjs('2020-01-01', dateFormat))
+  //   )
+  // }
+  // //需要全屏的Dom
+  // const fullScreenDom = useRef<any>(null)
+  // //熟悉useFullscreen
+  // const [isFullscreen, { toggleFullscreen }] = useFullscreen(fullScreenDom, {
+  //   pageFullscreen: true
+  // })
+  // //测试自定义hooks
+  // const {
+  //   allOptions,
+  //   defaultCheckedList,
+  //   userInfo,
+  //   useMemoArr,
+  //   setStatus,
+  //   movie,
+  //   setMovie,
+  //   runAsync,
+  //   testUseCallback,
+  //   testUseMemoizedFn,
+  //   open,
+  //   setOpen,
+  //   loading
+  // } = useData()
+  // //dom
+  // const table_box_dom = useRef(null)
+  // //获取dom
+  // useEffect(() => {
+  //   console.log('table_dom', table_box_dom.current)
+  // }, [])
+  // //二次封装的antd的回调
+  // function onChange(page_num: number) {
+  //   console.log('测试二次封装antd回调', page_num)
+  // }
+  // //dom
+  // const btnDom = useRef(null)
+  // //winDom
+  // const winDom = useRef(null)
+  // //点击dom外触发事件得到钩子
+  // useClickOutside(btnDom, winDom, () => {
+  //   setOpen(false)
+  // })
+  // //日期选择
+  // const change = (e: any) => {
+  //   console.log(
+  //     '打印所选择的日期',
+  //     e.map((item: any) => dayjs(item).format('YYYY-MM-DD'))
+  //   )
+  // }
+  // const enterpriseType = EnterpriseTypeList.BRANCH
+  // // const [data11, setData11] = useState<any>([])
+  // // setTimeout(() => {
+  // //   setData11([1, 2])
+  // // }, 3000)
+  // // if (data11.length === 0) {
+  // //   return <div>empty</div>
+  // // }
+  // const [loadQueue, setPending] = useState<any>({})
+
+  // // 速览页加载状态
+  // const loadingList: any = useMemo(() => {
+  //   // const obj = {}
+  //   // console.log(
+  //   //   '测试true',
+  //   //   values(obj).some((d: any) => d)
+  //   // )
+  //   if (loadQueue) return values(loadQueue).some((d: any) => d)
+  //   return true
+  // }, [loadQueue])
+  // console.log('测试loading', loadingList)
+
+  // // 是否首次加载
+  // const f = useRef<any>(true)
+  // const firstLoading = useMemo(() => {
+  //   if (f.current && loadingList) {
+  //     f.current = false
+  //     return true
+  //   }
+  //   return false
+  // }, [loadingList])
+  // const [idata, setIdata] = useState('你好')
+  // useEffect(() => {
+  //   setIdata('我不好')
+  // }, [])
+  const ellipsisList = useMemo(() => {
+    const arr = [
+      '百百百百百百(3)',
+      '千千千千千千(3)',
+      '万万万万万万(1)',
+      '万万万万万万(1)',
+      '亿亿亿亿亿(1)'
+    ]
+
+    // 获取当前日期并减去1年
+    const lastYear = dayjs().subtract(1, 'year')
+
+    // 获取去年的起始日期（1月1日 00:00:00）
+    const startOfLastYear = lastYear.startOf('year')
+
+    // 获取去年的结束日期（12月31日 23:59:59.999）
+    const endOfLastYear = lastYear.endOf('year')
+
+    // 输出结果（可根据需要格式化）
+    console.log('去年起始日期:', startOfLastYear.format('YYYY-MM-DD')) // 示例：2022-01-01
+    console.log('去年结束日期:', endOfLastYear.format('YYYY-MM-DD')) // 示例：2022-12-31
+
+    // 获取今年的起始日期（1月1日）
+    const startOfYear = dayjs().startOf('year').format('YYYY-MM-DD')
+    console.log('今年的起始日期:', startOfYear) // 示例输出：2023-01-01
+
+    // 获取今天的日期
+    const today = dayjs().format('YYYY-MM-DD')
+    console.log('今天的日期:', today)
+
     return (
-      current &&
-      (current > dayjs('2020-12-01', dateFormat) || current < dayjs('2020-01-01', dateFormat))
+      <>
+        {arr.map((item, index) => (
+          <span className="box_item" key={index}>
+            <span>{index !== 0 ? ',' : ''}</span>
+            {item}
+          </span>
+        ))}
+      </>
     )
-  }
-  //需要全屏的Dom
-  const fullScreenDom = useRef<any>(null)
-  //熟悉useFullscreen
-  const [isFullscreen, { toggleFullscreen }] = useFullscreen(fullScreenDom, {
-    pageFullscreen: true
-  })
-  //测试自定义hooks
-  const {
-    allOptions,
-    defaultCheckedList,
-    userInfo,
-    useMemoArr,
-    setStatus,
-    movie,
-    setMovie,
-    runAsync,
-    testUseCallback,
-    testUseMemoizedFn,
-    open,
-    setOpen,
-    loading
-  } = useData()
-  //dom
-  const table_box_dom = useRef(null)
-  //获取dom
-  useEffect(() => {
-    console.log('table_dom', table_box_dom.current)
   }, [])
-  //二次封装的antd的回调
-  function onChange(page_num: number) {
-    console.log('测试二次封装antd回调', page_num)
-  }
-  //dom
-  const btnDom = useRef(null)
-  //winDom
-  const winDom = useRef(null)
-  //点击dom外触发事件得到钩子
-  useClickOutside(btnDom, winDom, () => {
-    setOpen(false)
-  })
-  //日期选择
-  const change = (e: any) => {
-    console.log(
-      '打印所选择的日期',
-      e.map((item: any) => dayjs(item).format('YYYY-MM-DD'))
+
+  const ellipsisComp = useMemo(() => {
+    return (
+      <StyledViolatedFields>
+        <Popover
+          content={<div className="popoverContainer">{ellipsisList}</div>}
+          overlayClassName="popoverContainerBox"
+          getPopupContainer={() => document.body}
+          placement="bottom"
+          destroyTooltipOnHide
+        >
+          <div className="box">{ellipsisList}</div>
+        </Popover>
+      </StyledViolatedFields>
     )
-  }
+  }, [])
+
   return (
     <>
-      <div style={{ height: '20vh', backgroundColor: 'green' }}></div>
+      <div>{text}</div>
+      {ellipsisComp}
+      {/* <div>{idata}</div>
+      <Spin
+        spinning={firstLoading}
+        style={{
+          height: '300px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+          // background: 'pink'
+        }}
+      >
+        {['处罚统计', '处罚明细'].map((item, index) => (
+          <TestChild
+            type={item}
+            key={item}
+            index={index}
+            enterpriseType={enterpriseType}
+            setPending={setPending}
+          ></TestChild>
+        ))}
+      </Spin> */}
+      {/* <div style={{ height: '20vh', backgroundColor: 'green' }}></div>
       <div
         ref={table_box_dom}
         style={{ height: '80vh', backgroundColor: '#fff', overflowY: 'scroll' }}
@@ -294,11 +432,71 @@ function Movie() {
         )}
         <div>
           <RangePicker onChange={change} disabledDate={disabledDate} />
-        </div>
-      </div>
+        </div> */}
+      {/* </div> */}
     </>
   )
 }
+
+const StyledViolatedFields: any = styled.div`
+  width: 330px;
+  padding: 6px 12px;
+  background-color: palegoldenrod;
+  ::global {
+    .ant-popover-inner {
+      padding: 12px 4px 12px 0 !important;
+      .ant-popover-inner-content {
+        padding: 0 12px 0 16px !important;
+        max-width: 388px;
+        max-height: 185px;
+        overflow-y: auto;
+        // overflow-y: overlay;
+        font-size: 13px;
+        //scrollbar-color: #cfcfcf transparent;
+        .popoverContainer {
+          display: inline-block;
+          color: #141414;
+          font-size: 13px;
+          &.link {
+            cursor: pointer !important;
+            &:hover {
+              color: #025cdc !important;
+            }
+          }
+          &.hover-link {
+            cursor: pointer !important;
+            &:hover {
+              color: #025cdc !important;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .box {
+    background-color: aquamarine;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    .box_item {
+      color: blue;
+      cursor: pointer;
+      /* &:hover {
+        text-decoration: underline;
+      } */
+    }
+  }
+  .elipps {
+    margin-top: 5px;
+    /* width: 50px; */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background-color: cornflowerblue;
+    /* border: 1px solid #ccc; 方便观察边界 */
+  }
+`
 
 const StyleComp: any = styled.div`
   height: 100px;
@@ -321,4 +519,5 @@ const PopComp: any = styled.div`
   align-items: center;
   justify-content: center;
 `
+
 export default Movie

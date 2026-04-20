@@ -14,3 +14,6 @@ export const allUserGetService = (obj: {
 }) => request.post<any>('/my/getAllUser', obj)
 //获取数据展示页数据
 export const getDataCountService = () => request.post<any>('/my/getDataCount')
+//deepseek接口
+// export const chatToDeepseekService = ({ username }: any) =>
+//   request.post<any>('/my/userinfo', { username })

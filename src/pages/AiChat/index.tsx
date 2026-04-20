@@ -1,312 +1,190 @@
-// import styled from 'styled-components'
-// import ReactMarkdown from 'react-markdown'
-// import rehypeHighlight from 'rehype-highlight'
-// import 'highlight.js/styles/atom-one-dark.css'
-// // import { useAiData } from './hooks/useData'
-// import { Input, Dropdown } from 'antd'
-// import { useRef } from 'react'
-// import { LoadingOutlined, DownOutlined, SunOutlined, MoonOutlined } from '@ant-design/icons'
-// function AiChat() {
-//   const ChatContainerRef = useRef(null)
-//   //处理ai问答所需数据的hooks
-//   const {
-//     chatList,
-//     sendQues,
-//     msg,
-//     setMsg,
-//     aiName,
-//     setAiName,
-//     isStream,
-//     isDark,
-//     setIsDark,
-//     sendToDeepseek
-//   } = useAiData(ChatContainerRef)
-//   //AI菜单
-//   const items: any = [
-//     {
-//       label: (
-//         <div
-//           style={{
-//             color: aiName === '讯飞星火大模型' ? '#6e59c6' : '#000',
-//             fontWeight: aiName === '讯飞星火大模型' ? 'bolder' : 'normal'
-//           }}
-//           onClick={() => setAiName('讯飞星火大模型')}
-//         >
-//           讯飞星火大模型
-//         </div>
-//       ),
-//       key: '0'
-//     },
-//     {
-//       label: (
-//         <div
-//           style={{
-//             color: aiName === 'DeepSeek' ? '#6e59c6' : '#000',
-//             fontWeight: aiName === 'DeepSeek' ? 'bolder' : 'normal'
-//           }}
-//           onClick={() => setAiName('DeepSeek')}
-//         >
-//           DeepSeek
-//         </div>
-//       ),
-//       key: '1'
-//     },
-//     {
-//       label: (
-//         <div
-//           style={{
-//             color: aiName === '通义千问' ? '#6e59c6' : '#000',
-//             fontWeight: aiName === '通义千问' ? 'bolder' : 'normal'
-//           }}
-//           onClick={() => setAiName('通义千问')}
-//         >
-//           通义千问
-//         </div>
-//       ),
-//       key: '2'
-//     }
-//   ]
-//   return (
-//     <div>
-//       <AiHeader $isdark={isDark}>
-//         <Dropdown menu={{ items }} trigger={['click']}>
-//           <div>
-//             <span
-//               onClick={() => {
-//                 console.log('sendToDeepseek')
-//                 sendToDeepseek()
-//               }}
-//             >
-//               🤖{aiName}
-//             </span>
-//             <DownOutlined style={{ fontSize: '14px', cursor: 'pointer', marginLeft: '2px' }} />
-//           </div>
-//         </Dropdown>
-//         {isDark === 'true' ? (
-//           <MoonOutlined
-//             onClick={() => {
-//               console.log('moon')
-//               sendToDeepseek()
-//               setIsDark('false')
-//               localStorage.setItem('AI_IS_DARK', 'false')
-//             }}
-//             className="theme-icon"
-//           />
-//         ) : (
-//           <SunOutlined
-//             onClick={() => {
-//               console.log('sun')
-//               sendToDeepseek()
-//               setIsDark('true')
-//               localStorage.setItem('AI_IS_DARK', 'true')
-//             }}
-//             className="theme-icon"
-//           />
-//         )}
-//       </AiHeader>
-//       <ChatContainer ref={ChatContainerRef} $isdark={isDark}>
-//         {chatList.length !== 0 &&
-//           chatList.map((item: any, index: any) =>
-//             item.role === 'loading' ? (
-//               <div key={index} className="chatItemLoading">
-//                 <LoadingOutlined />
-//               </div>
-//             ) : item.role === 'assistant' ? (
-//               <div key={index} className="chatItemAi">
-//                 <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{item?.content}</ReactMarkdown>
-//               </div>
-//             ) : (
-//               <div key={index} className="chatItemUser">
-//                 <ReactMarkdown rehypePlugins={[rehypeHighlight]}>{item?.content}</ReactMarkdown>
-//               </div>
-//             )
-//           )}
-//       </ChatContainer>
-//       <InputContainer $isdark={isDark}>
-//         <Input
-//           className="input"
-//           placeholder={isStream ? 'AI正在飞速思考中🚀' : '请输入提问内容吧'}
-//           onPressEnter={(e: any) => {
-//             if (!isStream) {
-//               setMsg('')
-//               sendQues(e.target.value)
-//             }
-//           }}
-//           onChange={(e: any) => {
-//             setMsg(e.target.value)
-//           }}
-//           value={msg}
-//           disabled={isStream}
-//         />
-//       </InputContainer>
-//     </div>
-//   )
-// }
-// const AiHeader: any = styled.div`
-//   height: calc(var(--vh) * 7);
-//   background-color: #6e59c6;
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-//   font-weight: bolder;
-//   color: #fff;
-//   font-size: 20px;
-//   position: relative;
-//   .theme-icon {
-//     position: absolute;
-//     top: 50%;
-//     right: 3%;
-//     transform: translateY(-50%);
-//     cursor: pointer;
-//   }
-// `
-// const ChatContainer: any = styled.div`
-//   @media screen and (min-width: 280px) {
-//     background-color: ${(props: any) => (props.$isdark === 'true' ? '#292a2d' : '#ffffff')};
-//     height: calc(var(--vh) * 83);
-//     overflow: hidden;
-//     overflow-y: scroll;
-//     padding: 20px 2%;
-//     &::-webkit-scrollbar {
-//       width: 0;
-//       height: 0;
-//       display: none;
-//     }
-//     .chatItemLoading {
-//       border-radius: 14px;
-//       height: 40px;
-//       width: 40px;
-//       margin-top: 40px;
-//       line-height: 40px;
-//       text-align: center;
-//       background-color: ${(props: any) => (props.$isdark === 'true' ? '#212327' : '#f6f3ff')};
-//       color: ${(props: any) => (props.$isdark === 'true' ? '#ffffff' : '#000')};
-//     }
-//     .chatItemAi {
-//       padding: 0px 15px;
-//       overflow: hidden;
-//       border-radius: 14px;
-//       min-height: 40px;
-//       width: fit-content;
-//       height: fit-content;
-//       min-width: 40px;
-//       max-width: 94%;
-//       background-color: ${(props: any) => (props.$isdark === 'true' ? '#212327' : '#f6f3ff')};
-//       color: ${(props: any) => (props.$isdark === 'true' ? '#ffffff' : '#000')};
-//       margin-top: 40px;
-//       &:first-child {
-//         margin-top: 0;
-//       }
-//     }
-//     .chatItemUser {
-//       padding: 0px 15px;
-//       overflow: hidden;
-//       border-radius: 14px;
-//       min-height: 40px;
-//       width: fit-content;
-//       height: fit-content;
-//       min-width: 40px;
-//       max-width: 94%;
-//       background-color: #6e59c6;
-//       color: #ffffff;
-//       margin-top: 40px;
-//       margin-left: auto;
-//       margin-right: 0px;
-//     }
-//   }
-//   @media screen and (min-width: 900px) {
-//     background-color: ${(props: any) => (props.$isdark === 'true' ? '#292a2d' : '#ffffff')};
-//     height: calc(var(--vh) * 83);
-//     overflow: hidden;
-//     overflow-y: scroll;
-//     padding: 20px calc((100% - 900px) / 2);
-//     &::-webkit-scrollbar {
-//       width: 0;
-//       height: 0;
-//       display: none;
-//     }
-//     .chatItemLoading {
-//       border-radius: 14px;
-//       height: 40px;
-//       width: 40px;
-//       margin-top: 40px;
-//       line-height: 40px;
-//       text-align: center;
-//       background-color: ${(props: any) => (props.$isdark === 'true' ? '#212327' : '#f6f3ff')};
-//       color: ${(props: any) => (props.$isdark === 'true' ? '#ffffff' : '#000')};
-//     }
-//     .chatItemAi {
-//       padding: 0px 15px;
-//       overflow: hidden;
-//       border-radius: 14px;
-//       min-height: 40px;
-//       width: fit-content;
-//       height: fit-content;
-//       min-width: 40px;
-//       max-width: 860px;
-//       background-color: ${(props: any) => (props.$isdark === 'true' ? '#212327' : '#f6f3ff')};
-//       color: ${(props: any) => (props.$isdark === 'true' ? '#ffffff' : '#000')};
-//       margin-top: 40px;
-//       &:first-child {
-//         margin-top: 0;
-//       }
-//     }
-//     .chatItemUser {
-//       padding: 0px 15px;
-//       overflow: hidden;
-//       border-radius: 14px;
-//       min-height: 40px;
-//       width: fit-content;
-//       height: fit-content;
-//       min-width: 40px;
-//       max-width: 860px;
-//       background-color: #6e59c6;
-//       color: #ffffff;
-//       margin-top: 40px;
-//       margin-left: auto;
-//       margin-right: 0px;
-//     }
-//   }
-// `
-// const InputContainer: any = styled.div`
-//   @media screen and (min-width: 280px) {
-//     height: calc(var(--vh) * 10);
-//     display: flex;
-//     justify-content: center;
-//     align-items: start;
-//     background-color: ${(props: any) => (props.$isdark === 'true' ? '#292a2d' : '#ffffff')};
-//     .input {
-//       height: calc(var(--vh) * 8);
-//       width: 96%;
-//       border: 2px #6e59c6 solid;
-//       border-radius: 16px;
-//       color: ${(props: any) => (props.$isdark === 'true' ? '#ffffff' : '#000')};
-//       background-color: ${(props: any) => (props.$isdark === 'true' ? '#404045' : '#ffffff')};
-//     }
-//     .input::-webkit-input-placeholder {
-//       color: ${(props: any) => (props.$isdark === 'true' ? '#6f707b' : '#6e6e6e')};
-//     }
-//   }
-//   @media screen and (min-width: 900px) {
-//     height: calc(var(--vh) * 10);
-//     display: flex;
-//     justify-content: center;
-//     align-items: start;
-//     background-color: ${(props: any) => (props.$isdark === 'true' ? '#292a2d' : '#ffffff')};
-//     .input {
-//       height: calc(var(--vh) * 8);
-//       width: 900px;
-//       border: 2px #6e59c6 solid;
-//       border-radius: 16px;
-//       color: ${(props: any) => (props.$isdark === 'true' ? '#ffffff' : '#000')};
-//       background-color: ${(props: any) => (props.$isdark === 'true' ? '#404045' : '#ffffff')};
-//     }
-//     .input::-webkit-input-placeholder {
-//       color: ${(props: any) => (props.$isdark === 'true' ? '#6f707b' : '#6e6e6e')};
-//     }
-//   }
-// `
+import { useState, useRef, memo, useMemo } from 'react'
+import styled from 'styled-components'
+import { Input } from 'antd'
+import { useMemoizedFn } from 'ahooks'
+import { nanoid } from 'nanoid'
+import { chatToDeepseekApi } from './api'
+import hljs from 'highlight.js'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import 'highlight.js/styles/github-dark.css'
+
+const { TextArea } = Input
+const LOADING_TIP = 'loading...'
+
+const CodeHighlighter = memo(({ code, language }: any) => {
+  const [copied, setCopied] = useState(false)
+
+  const highlightedHtml = useMemo(() => {
+    const result = hljs.highlight(code, {
+      language: language,
+      ignoreIllegals: true
+    })
+    return result.value
+  }, [code, language])
+
+  const handleCopy = useMemoizedFn(async () => {
+    await navigator.clipboard.writeText(code)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  })
+
+  return (
+    <div className="code-block">
+      <div className="code-header">
+        <span className="language">{language}</span>
+        <button onClick={handleCopy} className="copy-btn">
+          {copied ? '✓ 已复制' : '📋 复制'}
+        </button>
+      </div>
+      <pre>
+        <code
+          className={`language-${language} hljs`}
+          dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+        />
+      </pre>
+    </div>
+  )
+})
+
 function AiChat() {
-  return <>AiChat</>
+  const [content, setContent] = useState('')
+  const inpKeyRef = useRef(nanoid())
+  const [isInpDisabled, setIsInpDisabled] = useState(false)
+
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  const scrollToBottom = useMemoizedFn(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollTo({
+        top: contentRef.current.scrollHeight,
+        behavior: 'smooth'
+      })
+    }
+  })
+
+  const submitFunc = useMemoizedFn(async (e) => {
+    const inpTxt = e?.target?.value?.trim() || ''
+    if (!inpTxt) return
+
+    inpKeyRef.current = nanoid()
+    setIsInpDisabled(true)
+    setContent(LOADING_TIP)
+
+    const res = await chatToDeepseekApi(inpTxt)
+    const decoder = new TextDecoder()
+    const reader = res.body?.getReader()
+    let fullContent = ''
+
+    while (true && reader) {
+      const { done, value } = (await reader.read()) as any
+      if (done) {
+        setIsInpDisabled(false)
+        scrollToBottom()
+        break
+      }
+
+      const lines = decoder
+        ?.decode(value)
+        ?.split('\n')
+        ?.filter((line) => line.startsWith('data:'))
+
+      for (const line of lines) {
+        const formatLine = line.slice(6)
+        if (formatLine === '[DONE]') break
+
+        const msg = JSON.parse(formatLine)?.choices[0]?.delta?.content || ''
+        if (msg) {
+          fullContent += msg
+          setContent(fullContent) // 实际更新
+        }
+      }
+    }
+  })
+
+  return (
+    <LayoutWrapper>
+      <div className="top">AI Chat</div>
+      <div className="content" ref={contentRef}>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          components={{
+            code({ inline, className, children, ...props }: any) {
+              const match = /language-(\w+)/.exec(className || '')
+              const language = match ? match[1] : ''
+
+              if (!inline && language) {
+                return (
+                  <CodeHighlighter language={language} code={String(children).replace(/\n$/, '')} />
+                )
+              }
+
+              return (
+                <code className={className} {...props}>
+                  {children}
+                </code>
+              )
+            }
+          }}
+        >
+          {content}
+        </ReactMarkdown>
+      </div>
+      <div className="bottom">
+        <TextArea
+          disabled={isInpDisabled}
+          key={inpKeyRef.current}
+          onPressEnter={submitFunc}
+          placeholder="ask me any question is ok"
+          autoSize={{ minRows: 5, maxRows: 5 }}
+        />
+      </div>
+    </LayoutWrapper>
+  )
 }
+
 export default AiChat
+
+const LayoutWrapper = styled.div`
+  background-color: #fff;
+  height: 100vh;
+  .top {
+    height: 30px;
+    font-weight: bolder;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #679efe;
+  }
+  .content {
+    > span {
+      color: #679efe;
+    }
+    height: calc(100% - 210px);
+    overflow-y: scroll;
+    padding-left: 12px;
+    &::-webkit-scrollbar {
+      width: 12px;
+      height: 12px;
+      background-color: #fff;
+    }
+    &::-webkit-scrollbar-track {
+      background-color: #fff;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #ccc;
+      border-radius: 8px;
+    }
+  }
+  .bottom {
+    background-color: #fff;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    .btn {
+      margin-left: auto;
+    }
+  }
+`

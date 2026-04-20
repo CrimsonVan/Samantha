@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { clearToken, clearUserInfo } from '../../store/modules/todollist'
-import { getPersistToken } from '../../utils/token'
 import {
   FileOutlined,
   PieChartOutlined,
@@ -47,7 +46,7 @@ const items: MenuItem[] = [
 
 const LayoutPage: React.FC = () => {
   // const history = useHistory()
-  console.log('打印持久化token', getPersistToken())
+
   const [breadList, setBreadList] = useState<Array<any>>([
     {
       href: '',
@@ -75,7 +74,7 @@ const LayoutPage: React.FC = () => {
           title: findNav2.label
         })
       }
-      console.log('打印newArr', newArr)
+
       setBreadList([
         {
           href: '',
@@ -93,10 +92,34 @@ const LayoutPage: React.FC = () => {
     })
     // history.push(e.key)
   }
+  const chatDeepseek = async () => {
+    // 处理流式数据
+    // const reader = res.body.getReader()
+    // const { done, value } = await reader.read()
+    // // if (done) break
+    // console.log('value', value)
+    // // const decoder = new TextDecoder('utf-8')
+    // // let assistantMessage = ''
+    //   const { done, value } = await reader.read()
+    //   if (done) break
+    //   console.log('value', value)
+    //   // const chunk = decoder.decode(value)
+    //   // assistantMessage += chunk
+    //   // // 更新最后一条消息（假设 DeepSeek 返回的是增量数据）
+    //   // const lastMessage = messages.value.find((msg) => msg.role === 'assistant')
+    //   // if (!lastMessage) {
+    //   //   messages.value.push({ role: 'assistant', content: assistantMessage })
+    //   // } else {
+    //   //   lastMessage.content = assistantMessage
+    //   // }
+    // }
+  }
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider collapsed={collapsed}>
-        <div className="demo-logo-vertical">小番茄</div>
+        <div className="demo-logo-vertical" onClick={chatDeepseek}>
+          小番茄
+        </div>
         <Menu
           onClick={onClick}
           theme="dark"
@@ -127,7 +150,6 @@ const LayoutPage: React.FC = () => {
               cancelText="No"
               onConfirm={() => {
                 navigate('/login')
-                console.log('退出')
                 dispatch(clearToken())
                 dispatch(clearUserInfo())
               }}
