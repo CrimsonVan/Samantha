@@ -20,6 +20,7 @@ const FAKE_MSG_LIST = Array.from({ length: 10000 }, (_, i) => ({
 }))
 
 function useList({ chatList, id }: { chatList: any[]; id: string }) {
+  const isLockFirstRequest = useRef(false)
   const [isFirstLoading, setIsFirstLoading] = useState(true)
   const [msgList, setMsgList] = useImmer<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -126,17 +127,22 @@ function useList({ chatList, id }: { chatList: any[]; id: string }) {
   })
 
   useEffect(() => {
-    const newChatMessage = chatList?.[0]?.label
-    if (isNewChat && newChatMessage) {
-      text2TextFunc(newChatMessage)
-    } else {
-      setTimeout(() => {
+    if (!isLockFirstRequest.current) {
+      const newChatMessage = chatList?.[0]?.label
+      if (isNewChat && newChatMessage) {
+        console.log('newChatMessage', newChatMessage, id)
         setIsFirstLoading(false)
-        startTransition(() => {
-          setMsgList(() => FAKE_MSG_LIST)
-        })
-      }, 1000)
+        text2TextFunc(newChatMessage)
+      } else {
+        setTimeout(() => {
+          setIsFirstLoading(false)
+          startTransition(() => {
+            setMsgList(() => FAKE_MSG_LIST)
+          })
+        }, 1000)
+      }
     }
+    isLockFirstRequest.current = true
     return () => {
       abortControllerRef.current?.abort()
     }

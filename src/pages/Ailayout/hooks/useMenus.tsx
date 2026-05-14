@@ -34,6 +34,7 @@ const useMenus = () => {
     if (!id || loading) return
     navigate(`/aiChat/${id}`)
     setMenus((d) => {
+      d[0].isNew = false
       d.unshift({
         label: text || '新对话',
         key: id,
