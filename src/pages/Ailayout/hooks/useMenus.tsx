@@ -14,6 +14,7 @@ const useMenus = () => {
   const [loading, setLoading] = useState(true)
   const [menus, setMenus] = useImmer<any[]>([])
   const menusScrollRef = useRef<HTMLDivElement>(null)
+  const [, startTransition] = useTransition()
 
   const navigate = useNavigate()
   const { id = '' } = useParams()
@@ -24,13 +25,8 @@ const useMenus = () => {
 
   const onMenuClick = useMemoizedFn(({ key }) => {
     if (key !== id) {
-      // 取消上一次未执行的导航
-      if (rafIdRef.current) {
-        cancelAnimationFrame(rafIdRef.current)
-      }
-      rafIdRef.current = requestAnimationFrame(() => {
+      startTransition(() => {
         navigate(`/aiChat/${key}`)
-        rafIdRef.current = null
       })
     }
   })

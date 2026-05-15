@@ -23,11 +23,16 @@ function useList({ chatList, id }: { chatList: any[]; id: string }) {
   const isLockFirstRequest = useRef(false)
   const [isFirstLoading, setIsFirstLoading] = useState(true)
   const [msgList, setMsgList] = useImmer<Message[]>([])
+  const isUiUpdate = useRef(true)
   const [isLoading, setIsLoading] = useState(false)
   // 用于标识当前正在进行的请求
   const currentRequestId = useRef<string | null>(null)
   // 保存 AbortController 以便取消
   const abortControllerRef = useRef<AbortController | null>(null)
+
+  const controlUiUpdate = useMemoizedFn((flag: boolean) => {
+    isUiUpdate.current = flag
+  })
 
   const isNewChat = useMemo(
     () => chatList?.some((item) => item?.key === id && item?.isNew),
@@ -51,9 +56,10 @@ function useList({ chatList, id }: { chatList: any[]; id: string }) {
 
     setIsLoading(true)
     // 新增一条用户消息
-    setMsgList((draft) => {
-      draft.push(currentMsg)
-    })
+    isUiUpdate.current &&
+      setMsgList((draft) => {
+        draft.push(currentMsg)
+      })
 
     try {
       const res = await chatToDeepseekApi({ prompt: inpTxt, signal: abortController.signal })
@@ -76,15 +82,15 @@ function useList({ chatList, id }: { chatList: any[]; id: string }) {
 
           try {
             const msg = JSON.parse(payload)?.choices?.[0]?.delta?.content ?? ''
-
             if (msg) {
               fullContent += msg
               // 只有当前请求是最新请求时才更新
               if (requestId === currentRequestId.current) {
-                setMsgList((draft) => {
-                  const target = draft.find((m) => m.id === currentMsg.id)
-                  if (target) target.aiMsg = fullContent
-                })
+                isUiUpdate.current &&
+                  setMsgList((draft) => {
+                    const target = draft.find((m) => m.id === currentMsg.id)
+                    if (target) target.aiMsg = fullContent
+                  })
               }
             }
           } catch (err) {
@@ -143,7 +149,8 @@ function useList({ chatList, id }: { chatList: any[]; id: string }) {
     isStreaming: isLoading,
     abortRequestFun,
     isFirstLoading,
-    isNewChat
+    isNewChat,
+    controlUiUpdate
   }
 }
 

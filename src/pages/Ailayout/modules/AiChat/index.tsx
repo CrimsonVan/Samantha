@@ -17,11 +17,18 @@ interface AiChatProps {
 }
 
 const AiChat = memo(({ id = '', chatList }: AiChatProps) => {
-  const { msgList, text2TextFunc, isStreaming, abortRequestFun, isFirstLoading, isNewChat } =
-    useList({
-      chatList,
-      id
-    })
+  const {
+    msgList,
+    text2TextFunc,
+    isStreaming,
+    abortRequestFun,
+    isFirstLoading,
+    isNewChat,
+    controlUiUpdate
+  } = useList({
+    chatList,
+    id
+  })
 
   const {
     virtualizer,
@@ -38,10 +45,12 @@ const AiChat = memo(({ id = '', chatList }: AiChatProps) => {
   })
 
   useActivate(() => {
+    controlUiUpdate(true)
     scrollToBottom()
   })
 
   useUnactivate(() => {
+    controlUiUpdate(false)
     scrollToBottom()
   })
 
