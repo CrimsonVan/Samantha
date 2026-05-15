@@ -20,11 +20,29 @@ const useMenus = () => {
 
   const selectedKeys = useMemo(() => (id ? [id] : []), [id])
 
+  const rafIdRef = useRef<any>(null)
+
   const onMenuClick = useMemoizedFn(({ key }) => {
     if (key !== id) {
-      navigate(`/aiChat/${key}`)
+      // 取消上一次未执行的导航
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current)
+      }
+      rafIdRef.current = requestAnimationFrame(() => {
+        navigate(`/aiChat/${key}`)
+        rafIdRef.current = null
+      })
     }
   })
+
+  // 组件卸载时取消
+  useEffect(() => {
+    return () => {
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current)
+      }
+    }
+  }, [])
 
   const goDefaultChat = useMemoizedFn(() => {
     navigate(`/`)

@@ -102,10 +102,6 @@ const AiChat = memo(({ id = '', chatList }: AiChatProps) => {
 const Entry = () => {
   const { id = '' } = useParams()
   const { chatList } = useChatContext()
-  const isNewChat = useMemo(
-    () => chatList?.some((item) => item?.key === id && item?.isNew),
-    [chatList, id]
-  )
   return (
     <KeepAlive id={id}>
       <AiChat id={id} chatList={chatList} />
