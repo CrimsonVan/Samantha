@@ -24,6 +24,8 @@ function useList({ chatList, id }: { chatList: any[]; id: string }) {
   const [isFirstLoading, setIsFirstLoading] = useState(true)
   const [msgList, setMsgList] = useImmer<Message[]>([])
   const isUiUpdate = useRef(true)
+  const isUnFinishRender = useRef(false)
+  const fullContent = useRef('')
   const [isLoading, setIsLoading] = useState(false)
   // 用于标识当前正在进行的请求
   const currentRequestId = useRef<string | null>(null)
@@ -32,6 +34,15 @@ function useList({ chatList, id }: { chatList: any[]; id: string }) {
 
   const controlUiUpdate = useMemoizedFn((flag: boolean) => {
     isUiUpdate.current = flag
+    if (isUnFinishRender.current && flag) {
+      setMsgList((draft) => {
+        const target = draft.find((m) => m.id === currentRequestId.current)
+        if (target) target.aiMsg = fullContent.current
+      })
+      isUnFinishRender.current = false
+      currentRequestId.current = null
+      setIsLoading(false)
+    }
   })
 
   const isNewChat = useMemo(
@@ -41,6 +52,7 @@ function useList({ chatList, id }: { chatList: any[]; id: string }) {
 
   const text2TextFunc = useMemoizedFn(async (inpTxt: string) => {
     // 取消之前的请求
+    fullContent.current = ''
     abortControllerRef.current?.abort()
     const abortController = new AbortController()
     abortControllerRef.current = abortController
@@ -49,7 +61,7 @@ function useList({ chatList, id }: { chatList: any[]; id: string }) {
     currentRequestId.current = requestId
 
     const currentMsg: Message = {
-      id: nanoid(),
+      id: requestId,
       aiMsg: LOADING_TIP,
       userMsg: inpTxt
     }
@@ -65,11 +77,16 @@ function useList({ chatList, id }: { chatList: any[]; id: string }) {
       const res = await chatToDeepseekApi({ prompt: inpTxt, signal: abortController.signal })
       const reader = res?.body?.getReader?.()
       const decoder = new TextDecoder()
-      let fullContent = ''
+      // let fullContent = ''
 
       while (reader) {
         const { done, value } = await reader.read()
-        if (done) break
+        if (done) {
+          if (!isUiUpdate.current) {
+            isUnFinishRender.current = true
+          }
+          break
+        }
 
         const lines = decoder
           .decode(value, { stream: true })
@@ -83,13 +100,13 @@ function useList({ chatList, id }: { chatList: any[]; id: string }) {
           try {
             const msg = JSON.parse(payload)?.choices?.[0]?.delta?.content ?? ''
             if (msg) {
-              fullContent += msg
+              fullContent.current += msg
               // 只有当前请求是最新请求时才更新
               if (requestId === currentRequestId.current) {
                 isUiUpdate.current &&
                   setMsgList((draft) => {
-                    const target = draft.find((m) => m.id === currentMsg.id)
-                    if (target) target.aiMsg = fullContent
+                    const target = draft.find((m) => m.id === requestId)
+                    if (target) target.aiMsg = fullContent.current
                   })
               }
             }
@@ -107,13 +124,13 @@ function useList({ chatList, id }: { chatList: any[]; id: string }) {
       // 网络错误时更新状态
       if (requestId === currentRequestId.current) {
         setMsgList((draft) => {
-          const target = draft.find((m) => m.id === currentMsg.id)
+          const target = draft.find((m) => m.id === requestId)
           if (target) target.aiMsg = '请求失败，请重试'
         })
       }
     } finally {
       // 只有当前请求结束时才重置 loading
-      if (requestId === currentRequestId.current) {
+      if (requestId === currentRequestId.current && !isUnFinishRender.current) {
         currentRequestId.current = null
         setIsLoading(false)
       }

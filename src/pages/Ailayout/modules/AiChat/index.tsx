@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react'
+import { memo } from 'react'
 
 import { useParams } from 'react-router-dom'
 import { LoadingOutlined } from '@ant-design/icons'
@@ -57,53 +57,50 @@ const AiChat = memo(({ id = '', chatList }: AiChatProps) => {
   return (
     <LayoutWrapper>
       <div className="top">{topTitle}</div>
-      {isFirstLoading && !isNewChat ? (
+      {isFirstLoading && !isNewChat && (
         <div className="spin-wrapper">
           <Spin indicator={<LoadingOutlined />} size="large" />
         </div>
-      ) : (
-        <>
-          <div className="content" ref={scrollContainerRef}>
-            <div
-              style={{
-                height: `${totalHeight}px`,
-                width: '100%',
-                position: 'relative'
-              }}
-            >
-              {items.map((virtualRow) => {
-                const message = msgList[virtualRow.index]
-                return (
-                  <div
-                    key={message.id}
-                    data-index={virtualRow.index}
-                    ref={virtualizer.measureElement}
-                    style={{
-                      position: 'absolute',
-                      top: `${virtualRow.start}px`,
-                      left: 0,
-                      width: '100%'
-                    }}
-                  >
-                    <div className="msg-item" key={message.id}>
-                      <div className="user-msg">
-                        <div className="user-content">{message.userMsg}</div>
-                      </div>
-                      <AiReplyContent content={message.aiMsg} getContainer={getScrollContainer} />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-          <AiInput
-            sendMsg2Ai={text2TextFunc}
-            isStreaming={isStreaming}
-            abortRequestFun={abortRequestFun}
-          />
-          <div className="tip-row">ai信息需要鉴别</div>
-        </>
       )}
+      <div className="content" ref={scrollContainerRef}>
+        <div
+          style={{
+            height: `${totalHeight}px`,
+            width: '100%',
+            position: 'relative'
+          }}
+        >
+          {items.map((virtualRow) => {
+            const message = msgList[virtualRow.index]
+            return (
+              <div
+                key={message.id}
+                data-index={virtualRow.index}
+                ref={virtualizer.measureElement}
+                style={{
+                  position: 'absolute',
+                  top: `${virtualRow.start}px`,
+                  left: 0,
+                  width: '100%'
+                }}
+              >
+                <div className="msg-item" key={message.id}>
+                  <div className="user-msg">
+                    <div className="user-content">{message.userMsg}</div>
+                  </div>
+                  <AiReplyContent content={message.aiMsg} getContainer={getScrollContainer} />
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+      <AiInput
+        sendMsg2Ai={text2TextFunc}
+        isStreaming={isStreaming}
+        abortRequestFun={abortRequestFun}
+      />
+      <div className="tip-row">ai信息需要鉴别</div>
     </LayoutWrapper>
   )
 })

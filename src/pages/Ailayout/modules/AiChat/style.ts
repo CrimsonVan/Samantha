@@ -3,8 +3,8 @@ import styled from 'styled-components'
 export const LayoutWrapper = styled.div`
   background-color: #fff;
   height: 100%;
-  /* height: 100vh; */
   font-size: 16px;
+  position: relative;
   .top {
     height: 30px;
     font-weight: bolder;
@@ -15,10 +15,17 @@ export const LayoutWrapper = styled.div`
     color: #679efe;
   }
   .spin-wrapper {
+    z-index: 999;
+    background-color: #fff;
     height: calc(100% - 30px);
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: absolute;
+    top: 30px;
+    bottom: 0;
+    left: 0;
   }
   .content {
     > span {
