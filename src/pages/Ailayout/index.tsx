@@ -12,7 +12,9 @@ const AiLayout = () => {
   const { menus, selectedKeys, onMenuClick, createNewChat, menusScrollRef, loading } = useMenus()
   const navigate = useNavigate()
   const goDefaultChat = useMemoizedFn(() => {
-    navigate(`/`)
+    requestAnimationFrame(() => {
+      navigate(`/`)
+    })
   })
 
   return (

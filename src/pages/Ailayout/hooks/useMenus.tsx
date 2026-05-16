@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { nanoid } from 'nanoid'
 import { useImmer } from 'use-immer'
@@ -14,31 +14,19 @@ const useMenus = () => {
   const [loading, setLoading] = useState(true)
   const [menus, setMenus] = useImmer<any[]>([])
   const menusScrollRef = useRef<HTMLDivElement>(null)
-  const [, startTransition] = useTransition()
 
   const navigate = useNavigate()
   const { id = '' } = useParams()
 
   const selectedKeys = useMemo(() => (id ? [id] : []), [id])
 
-  const rafIdRef = useRef<any>(null)
-
   const onMenuClick = useMemoizedFn(({ key }) => {
     if (key !== id) {
-      startTransition(() => {
+      requestAnimationFrame(() => {
         navigate(`/aiChat/${key}`)
       })
     }
   })
-
-  // 组件卸载时取消
-  useEffect(() => {
-    return () => {
-      if (rafIdRef.current) {
-        cancelAnimationFrame(rafIdRef.current)
-      }
-    }
-  }, [])
 
   const goDefaultChat = useMemoizedFn(() => {
     navigate(`/`)
