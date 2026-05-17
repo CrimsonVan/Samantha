@@ -78,17 +78,15 @@ const useVirtualScroll = ({
     if (shouldAutoScrollRef.current && !isUpScrollLockRef.current) {
       virtualizer.scrollToIndex(Infinity, {
         align: 'end',
-        behavior: 'instant'
+        behavior: 'auto'
       })
     }
   }, [messages, id])
 
   const scrollToBottom = useMemoizedFn(() => {
-    requestAnimationFrame(() => {
-      virtualizer.scrollToIndex(Infinity, {
-        align: 'end',
-        behavior: 'instant'
-      })
+    virtualizer.scrollToIndex(Infinity, {
+      align: 'end',
+      behavior: 'auto'
     })
   })
 

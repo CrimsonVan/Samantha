@@ -45,13 +45,14 @@ const AiChat = memo(({ id = '', chatList }: AiChatProps) => {
   })
 
   useActivate(() => {
-    controlUiUpdate(true)
-    scrollToBottom()
+    requestAnimationFrame(() => {
+      controlUiUpdate(true)
+      scrollToBottom()
+    })
   })
 
   useUnactivate(() => {
     controlUiUpdate(false)
-    scrollToBottom()
   })
 
   return (
