@@ -4,8 +4,9 @@ import { nanoid } from 'nanoid'
 import { useImmer } from 'use-immer'
 import { useMemoizedFn } from 'ahooks'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useVirtualizer } from '@tanstack/react-virtual'
 
-const FAKE_ITEMS = new Array(23).fill({}).map(() => ({
+const FAKE_ITEMS = new Array(10000).fill({}).map(() => ({
   label: '你好，Deepseek',
   key: nanoid()
 }))
@@ -17,6 +18,16 @@ const useMenus = () => {
 
   const navigate = useNavigate()
   const { id = '' } = useParams()
+
+  const getScrollContainer = useMemoizedFn(() => menusScrollRef.current || document.body)
+  const getEstimateSize = useMemoizedFn(() => 44)
+  const virtualizer = useVirtualizer({
+    count: menus.length,
+    getScrollElement: getScrollContainer,
+    estimateSize: getEstimateSize,
+    overscan: 5
+  })
+  virtualizer.shouldAdjustScrollPositionOnItemSizeChange = useMemoizedFn(() => false)
 
   const selectedKeys = useMemo(() => (id ? [id] : []), [id])
 
@@ -43,8 +54,14 @@ const useMenus = () => {
         isNew: true
       })
     })
-    menusScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+    virtualizer.scrollToIndex(0, {
+      align: 'start',
+      behavior: 'smooth'
+    })
   })
+
+  const items = virtualizer.getVirtualItems()
+  const totalHeight = virtualizer?.getTotalSize() || 0
 
   useEffect(() => {
     setTimeout(() => {
@@ -55,12 +72,15 @@ const useMenus = () => {
 
   return {
     menus,
+    items,
     selectedKeys,
     menusScrollRef,
     loading,
     createNewChat,
     onMenuClick,
-    goDefaultChat
+    goDefaultChat,
+    totalHeight,
+    virtualizer
   }
 }
 

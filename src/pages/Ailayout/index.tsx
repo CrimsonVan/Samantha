@@ -3,13 +3,23 @@ import { Outlet, useNavigate } from 'react-router-dom'
 import { useMemoizedFn } from 'ahooks'
 import useMenus from './hooks/useMenus'
 import { ChatProvider as AiChatProvider } from './context/ChatContext'
-
-import { Button, Menu, Spin } from 'antd'
+import { Spin } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
+
+import { Button } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 
 const AiLayout = () => {
-  const { menus, selectedKeys, onMenuClick, createNewChat, menusScrollRef, loading } = useMenus()
+  const {
+    menus,
+    items,
+    selectedKeys,
+    onMenuClick,
+    createNewChat,
+    menusScrollRef,
+    loading,
+    totalHeight
+  } = useMenus()
   const navigate = useNavigate()
   const goDefaultChat = useMemoizedFn(() => {
     requestAnimationFrame(() => {
@@ -33,21 +43,42 @@ const AiLayout = () => {
             </Button>
           </div>
           <div className="chat-menu" ref={menusScrollRef}>
-            {loading ? (
-              <div
-                style={{
-                  height: '100%',
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
+            {loading && (
+              <div className="menu-spin-wrapper">
                 <Spin indicator={<LoadingOutlined />} size="large" />
               </div>
-            ) : (
-              <Menu selectedKeys={selectedKeys} items={menus} onClick={onMenuClick} />
             )}
+            <div
+              style={{
+                height: `${totalHeight}px`,
+                width: '100%',
+                position: 'relative'
+              }}
+            >
+              {items?.map((virtualRow) => {
+                const chat: any = menus?.[virtualRow.index]
+                return (
+                  <div
+                    key={chat.key}
+                    className="menu-item-wrap"
+                    data-index={virtualRow.index}
+                    style={{
+                      position: 'absolute',
+                      top: `${virtualRow.start}px`,
+                      left: 0,
+                      width: '100%'
+                    }}
+                  >
+                    <div
+                      className={selectedKeys.includes(chat.key) ? 'menu-item active' : 'menu-item'}
+                      onClick={() => onMenuClick(chat)}
+                    >
+                      {chat.label}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
           </div>
         </div>
         <div className="main">
@@ -88,6 +119,19 @@ const AiLayoutWrap = styled.div`
     .chat-menu {
       height: calc(100% - 60px);
       overflow-y: scroll;
+      position: relative;
+      .menu-spin-wrapper {
+        z-index: 999;
+        background-color: #fff;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
       &::-webkit-scrollbar-button {
         display: none;
       }
@@ -103,12 +147,30 @@ const AiLayoutWrap = styled.div`
         background: #888;
         border-radius: 4px;
       }
-      .ant-menu {
-        background-color: #f5f5f5;
-        border-inline-end: none;
-        /* .ant-menu-item {
-          transition: none;
-        } */
+      .menu-item-wrap {
+        padding: 4px 8px 0px;
+        .menu-item {
+          padding-left: 8px;
+          background-color: #f5f5f5;
+          display: flex;
+          align-items: center;
+          line-height: 40px;
+          height: 40px;
+          cursor: pointer;
+          border-radius: 8px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          font-size: 14px;
+          &:not(.active):hover {
+            background-color: rgba(0, 0, 0, 0.06);
+            color: rgba(0, 0, 0, 0.88);
+          }
+          &.active {
+            background-color: #e6f4ff;
+            color: #1677ff;
+          }
+        }
       }
     }
   }
