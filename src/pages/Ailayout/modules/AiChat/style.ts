@@ -13,6 +13,9 @@ export const LayoutWrapper = styled.div`
     align-items: center;
     justify-content: center;
     color: #679efe;
+    .ant-skeleton-button {
+      height: 30px;
+    }
   }
   .spin-wrapper {
     z-index: 999;

@@ -31,6 +31,7 @@ function useList({ chatList, id }: { chatList: any[]; id: string }) {
   const currentRequestId = useRef<string | null>(null)
   // 保存 AbortController 以便取消
   const abortControllerRef = useRef<AbortController | null>(null)
+  const rafRef = useRef(0)
 
   const controlUiUpdate = useMemoizedFn((flag: boolean) => {
     isUiUpdate.current = flag
@@ -102,12 +103,16 @@ function useList({ chatList, id }: { chatList: any[]; id: string }) {
             if (msg) {
               fullContent.current += msg
               // 只有当前请求是最新请求时才更新
-              if (requestId === currentRequestId.current) {
-                isUiUpdate.current &&
-                  setMsgList((draft) => {
-                    const target = draft.find((m) => m.id === requestId)
-                    if (target) target.aiMsg = fullContent.current
+              if (requestId === currentRequestId.current && isUiUpdate.current) {
+                if (!rafRef.current) {
+                  rafRef.current = requestAnimationFrame(() => {
+                    setMsgList((draft) => {
+                      const target = draft.find((m) => m.id === requestId)
+                      if (target) target.aiMsg = fullContent.current
+                      rafRef.current = 0
+                    })
                   })
+                }
               }
             }
           } catch (err) {

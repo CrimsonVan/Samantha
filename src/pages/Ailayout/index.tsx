@@ -117,6 +117,7 @@ const AiLayoutWrap = styled.div`
       }
     }
     .chat-menu {
+      width: 100%;
       height: calc(100% - 60px);
       overflow-y: scroll;
       position: relative;
@@ -148,8 +149,10 @@ const AiLayoutWrap = styled.div`
         border-radius: 4px;
       }
       .menu-item-wrap {
+        width: 100%;
         padding: 4px 8px 0px;
         .menu-item {
+          width: 100%;
           padding-left: 8px;
           background-color: #f5f5f5;
           display: flex;

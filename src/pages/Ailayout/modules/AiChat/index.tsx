@@ -8,15 +8,16 @@ import { LayoutWrapper } from './style'
 import useVirtualScroll from './hooks/useVirtualScroll'
 import AiInput from './components/aiInput'
 import KeepAlive, { useActivate, useUnactivate } from 'react-activation'
-import { Spin } from 'antd'
+import { Spin, Skeleton } from 'antd'
 import { useChatContext } from '../../context/ChatContext'
 
 interface AiChatProps {
   id: string
   chatList: any[]
+  loading: boolean
 }
 
-const AiChat = memo(({ id = '', chatList }: AiChatProps) => {
+const AiChat = memo(({ id = '', chatList, loading }: AiChatProps) => {
   const {
     msgList,
     text2TextFunc,
@@ -35,7 +36,6 @@ const AiChat = memo(({ id = '', chatList }: AiChatProps) => {
     scrollContainerRef,
     getScrollContainer,
     totalHeight,
-    topTitle,
     items,
     scrollToBottom
   } = useVirtualScroll({
@@ -57,7 +57,13 @@ const AiChat = memo(({ id = '', chatList }: AiChatProps) => {
 
   return (
     <LayoutWrapper>
-      <div className="top">{topTitle}</div>
+      <div className="top">
+        {(isFirstLoading && !isNewChat) || !msgList?.[0]?.userMsg ? (
+          <Skeleton.Button active={true} size="default" shape="default" block={false} />
+        ) : (
+          <span>{msgList[0].userMsg}</span>
+        )}
+      </div>
       {isFirstLoading && !isNewChat && (
         <div className="spin-wrapper">
           <Spin indicator={<LoadingOutlined />} size="large" />
@@ -108,10 +114,10 @@ const AiChat = memo(({ id = '', chatList }: AiChatProps) => {
 
 const Entry = () => {
   const { id = '' } = useParams()
-  const { chatList } = useChatContext()
+  const { chatList, loading } = useChatContext()
   return (
     <KeepAlive id={id}>
-      <AiChat id={id} chatList={chatList} />
+      <AiChat id={id} chatList={chatList} loading={loading} />
     </KeepAlive>
   )
 }

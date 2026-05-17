@@ -1,4 +1,4 @@
-import { useRef, useEffect, useLayoutEffect, useMemo } from 'react'
+import { useRef, useEffect, useLayoutEffect } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useMemoizedFn } from 'ahooks'
 
@@ -90,7 +90,6 @@ const useVirtualScroll = ({
     })
   })
 
-  const topTitle = useMemo(() => messages?.[0]?.userMsg || 'AI Chat', [messages])
   const items = virtualizer.getVirtualItems()
 
   return {
@@ -98,7 +97,6 @@ const useVirtualScroll = ({
     scrollContainerRef,
     totalHeight,
     getScrollContainer,
-    topTitle,
     items,
     scrollToBottom
   }
